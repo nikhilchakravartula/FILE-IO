@@ -1,0 +1,7 @@
+This is a sample text file written for testing
+on file io
+based on posix standard 
+and this file is
+just a waste of your time
+go get some work become you become lazy
+GOOD <part of the day>
