@@ -6,6 +6,7 @@
 #include<stdbool.h>
 #include<time.h>
 #include<string.h>
+#include "file_sort.h"
 #define NUM_SPECS 7
 #define SIZE_ARRAY 100000000ULL
 #define NUM_DES 4
@@ -18,7 +19,7 @@ char * des[NUM_DES]={"PROFESSOR,","ASSISTANT-PROFESSOR,","TEACHING-ASSISTANT,","
 
 char* pro[NUM_PRO]={"Machine Learning\n","Operating System\n","DataBase Management System\n","Application\n"};
 
-unsigned long long  arr[SIZE_ARRAY];
+unsigned long long  arr[SIZE_ARRAY],arr2[SIZE_ARRAY];
 
 int new_file;
 
@@ -28,75 +29,59 @@ unsigned long long i=0,j=SIZE_ARRAY-1,temp;
 	for(i=0;i<SIZE_ARRAY;i++)
 	{
 		arr[i]=i+1;
+		arr2[i]=i+1+SIZE_ARRAY;
 	}
-
+	printf("loop done\n");
 	for(i=SIZE_ARRAY-1;i>=1;i--)
 	{
 		j=rand()%(i+1);
 		temp=arr[j];
 		arr[j]=arr[i];
 		arr[i]=temp;
+
+		temp=arr2[j];
+		arr2[j]=arr2[i];
+		arr2[i]=temp;
 		
 
 	}
-
+	printf("loop done\n");
 	new_file=creat("file1.csv",0644);
 	
 }
 
 
 unsigned long long file_size=0;
-
-void write_name(int fd,char* buf)
-{
-
-	char ch;
-	buf[0]='\0';
-	int i=0;
-	ssize_t len;
-	while (len!=0)
-	{
-		len=read(fd,&ch,1);
-		if(len==-1)
-		{
-		perror("read");
-		exit(0);
-		}
-
-		if(ch=='\0' ||ch=='\n' || ch==EOF)
-		{
-			
-			buf[i-1]=',';
-			//printf("%s\n",buf);
-			write(new_file,buf,i);
-			file_size+=i;
-			return;
-		}
-		else
-		{
-			buf[i++]=ch;
-
-		}
-	
-	}
-	return;
-
-
-}
+bool flag=false;
 
 unsigned long long a=0,b=0;
-void  write_roll()
+
+void  write_roll_and_name()
 {
 
-	
+	if(flag==false)
 	b=arr[a];
+	else b=arr2[a];
+
 	a++;
+
+	if(a>=SIZE_ARRAY )
+	{
+
+	if(flag==true)
+	{	exit(0);
+
+	}
+	flag=true;
+	a=0;
+	}
 
 	int k;
 	char buf[11];
+	char name[11];
+	
 	for( k=0;k<11;k++)
 	buf[k]='0';
-	
 	buf[10]=',';
 	k=0;
 	char* temp=buf+9;
@@ -104,11 +89,14 @@ void  write_roll()
 	{
 	*temp=b%10+'0';
 	b=b/10;
+	name[k]=(*temp)+'A';
 	k++;
 	temp--;
 	}
+	name[k]=',';
+	
 	write(new_file,temp+1,k+1);
-
+	write(new_file,name,k+1);
 
 	
 
@@ -140,14 +128,7 @@ int main()
 {
 	srand(time(NULL));
 	initialise();
-
-	int fd=open("names.csv",O_RDONLY|O_SYNC);
-	if(fd==-1)
-	{
-	perror("open");
-	exit(0);
-	}
-	char buf[100];
+	
 	char * roll;
 	char comma=',';
 	char newline='\n';
@@ -155,22 +136,22 @@ int main()
 	//char* name=get_name(fd);
 	while(1)
 	{
-		write_roll();
-		write_name(fd,buf);
+		write_roll_and_name();
 		write_spec();
 		write_pro();
 		if(file_size> FILE_SIZE)
 		break;
-		
-		if(buf[0]==NULL)
-		{
-		lseek(fd,0,SEEK_SET);
-		}
+	
 
 	}
 	
-	close(fd);
 	close(new_file);
+	
+
+	new_file=open("file1.csv",O_RDONLY);
+
+printf("opened file\n");
+//sort(new_file);
 
 return 0;
 
