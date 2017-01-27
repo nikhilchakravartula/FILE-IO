@@ -46,7 +46,7 @@ unsigned long long i=0,j=SIZE_ARRAY-1,temp;
 
 	}
 	printf("loop done\n");
-	new_file=creat("file1.csv",0644);
+	new_file=creat("file2.csv",0644);
 	
 }
 
@@ -127,7 +127,7 @@ int main()
 
 {
 	srand(time(NULL));
-	initialise();
+/*	initialise();
 	
 	char * roll;
 	char comma=',';
@@ -146,13 +146,17 @@ int main()
 	}
 	
 	close(new_file);
-	
+*/	
 
-	new_file=open("file1.csv",O_RDONLY);
+	new_file=open("file2.csv",O_RDONLY);
 
-printf("opened file\n");
-//sort(new_file);
-
+if(new_file==-1)
+{
+perror("open");
+}
+else{
+sort(new_file);
+}
 return 0;
 
 }

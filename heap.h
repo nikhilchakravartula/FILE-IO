@@ -61,6 +61,7 @@ void heap_insert(heap_node* arr,heap_node* node)
 
     arr[cursize]=(*node);
     cursize++;
+	printf("insert %llu\n",node->data);
 
 unsigned long long temp=cursize-1;
     while(temp!=0 && ( arr[temp].data < arr[parent(temp)].data) )
@@ -75,8 +76,9 @@ unsigned long long temp=cursize-1;
 
 bool heap_empty()
 {
-    return INT_MAX==cursize;
+    return (unsigned long long)-1 ==cursize;
 }
+
 heap_node pop_min(heap_node* arr)
 {
 
@@ -97,6 +99,8 @@ heap_node pop_min(heap_node* arr)
 
 
 }
+
+
 
 
 #endif // HEAP_H_INCLUDED
