@@ -6,7 +6,9 @@
 typedef struct
 {
     unsigned long long data;
+    int fd;
      char str[200];
+   
 }heap_node;
 
 
@@ -61,7 +63,7 @@ void heap_insert(heap_node* arr,heap_node* node)
 
     arr[cursize]=(*node);
     cursize++;
-	printf("insert %llu\n",node->data);
+//	printf("insert %llu\n",node->data);
 
 unsigned long long temp=cursize-1;
     while(temp!=0 && ( arr[temp].data < arr[parent(temp)].data) )
@@ -91,8 +93,8 @@ heap_node pop_min(heap_node* arr)
     else
     {
         heap_node t=arr[0];
+	cursize-=1;
         arr[0]=arr[cursize];
-        cursize-=1;
         heapify(arr,0);
         return t;
     }
@@ -101,6 +103,15 @@ heap_node pop_min(heap_node* arr)
 }
 
 
+void heap_print(heap_node* arr)
+{
+	for(int i=0;i<cursize;i++)
+	{
+		printf("%llu\n",arr[i].data);
+
+	}
 
 
+
+}
 #endif // HEAP_H_INCLUDED
