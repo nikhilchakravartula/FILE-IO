@@ -121,58 +121,106 @@ void merge_files()
 	DIR* dir;
 	unsigned long long level=0;
 	struct dirent* entry;
-	heap_node heap[MAX_FD];
-	int sorted_fds[MAX_FD];
 	char path[1000];
 	getcwd(path,1000);
 	strcat(path,"/sorted/");
 	dir=opendir(path);
 	char level_path[1000];
+	int i;
 	if(dir==NULL){
 	perror("already sorted files not found\n");exit(0);}
 	char sorted_file_name[1000];
+	char trash_file_name[1000];
+	int sorted_new_file;
+	heap_node* temp;
 	int count=0;
+	sprintf(trash_file_name,"%s%s",path,"trash/");
+	mkdir(trash_file_name,S_IRWXU | S_IRWXG | S_IRWXO);
 
-	while( (entry=readdir(dir))!=NULL)
+	while(1)
 	{
-		if((strncmp("sorted",entry->d_name,5))==0){
-		sprintf(sorted_file_name,"%s%s",path,entry->d_name);
-		sorted_fds[count]=open(sorted_file_name,O_RDWR);
-		heap_node* temp=read_heap_node(sorted_fds[count]);
-		heap_insert(heap,temp);
-		count+=1;
-		if(count==MAX_FD)
+	count=0;
+	  heap_node heap[MAX_FD];
+	  int sorted_fds[MAX_FD];
+
+	for(i=0;i<MAX_FD;i++)
+	{
+		
+		entry=readdir(dir);
+		
+		if(entry==NULL)
+			break;
+
+		if(!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
 		{
-		sprintf(level_path,"%slevel%llu/",path,level);
-			dir=opendir(level_path);
-			if(dir==NULL)
-				{if(-1==(mkdir(level_path,,S_IRWXU | S_IRWXG | S_IRWXO))){perror("cant create levrel sorted directory\n");exit(0)}};
+		count+=1;
+		sprintf(sorted_file_name,"%s%s",path,entry->d_name);
 
+		sorted_fds[count]=open(sorted_file_name,O_RDWR);
+		
+		sprintf(trash_file_name,"%s%s%s",path,"trash/",entry->d_name);
 
-			  heap_node t=pop_min(heap);
-			    if( -1==(write(sorted_new_file,t.str,strlen(t.str))))
-			    {
-			    	perror("write error level sorted file\n");
-				exit(0);
-			    }
+		rename(sorted_file_name,trash_file_name);
 
+		 temp=read_heap_node(sorted_fds[count]);
 
-	
+		if(temp!=NULL)
+		heap_insert(heap,temp);
 
-
-
+		
 		}
-
-		}
-
-
-
 
 	}
 
 
-	      
+	if(entry==NULL)
+	{
+		if(count==1){
+			printf("done sorting\n");return;}
 
+
+	}
+
+	sprintf(sorted_file_name,"sorted%llu",level);
+	sorted_new_file=creat(sorted_file_name,O_RDWR);
+
+	while(!heap_empty(heap))
+	{
+		 heap_node t=pop_min(heap);
+	 if( -1==(write(sorted_new_file,t.str,strlen(t.str))))
+	 {
+		perror("write error level sorted file\n");
+				exit(0);
+	 }
+	 temp=read_heap_node(t.fd);
+	 if(temp!=NULL)
+	 	heap_insert(heap,temp);
+	 
+	
+	}
+	
+
+	for(int j=0;j<i;j++)
+	{
+		close(sorted_fds[j]);
+	}
+	sprintf(trash_file_name,"%s%s","trash/");
+	
+	DIR* trash_dir=opendir(trash_file_name);
+	struct dirent* trash_entry;
+	while( (trash_entry=readdir(trash_dir))!=NULL)
+		{
+			if( !strcmp(trash_entry->d_name,".") || !strcmp(trash_entry->d_name,".."))
+			{
+
+		strcat(trash_file_name,trash_entry->d_name);	
+		unlink(trash_file_name);
+			}
+		}
+
+
+	}
+		
 }
 
 void sort(int fd)
@@ -274,7 +322,7 @@ void sort(int fd)
 		
 	printf("sorting individual files completed\n\n");
 	
-//	merge_files();
+	merge_files();
 	
 /*	for(unsigned long long i=0;i<file_no;i++)
 		lseek(temp_files[i],0,SEEK_SET);
