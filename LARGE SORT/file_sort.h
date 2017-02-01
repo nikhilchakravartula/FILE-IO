@@ -166,13 +166,13 @@ void merge_files()
 //		printf("inside if\n");
 //		printf("%s\n",entry->d_name);
 		sprintf(sorted_file_name,"%s%s",path,entry->d_name);
-		printf("i is %d\n",i);
+//		printf("i is %d\n",i);
 		sorted_fds[i]=open(sorted_file_name,O_RDWR);
 
 //		printf("After sorted fd count\n");
 		
 		sprintf(trash_file_name,"%s%s%s",path,"trash/",entry->d_name);
-		printf("%s %s\n",sorted_file_name,trash_file_name);
+//		printf("%s %s\n",sorted_file_name,trash_file_name);
 		rename(sorted_file_name,trash_file_name);
 //		printf("After rename\n");
 		 temp=read_heap_node(sorted_fds[i]);
@@ -191,7 +191,7 @@ void merge_files()
 	if(entry==NULL)
 	{
 	level=0;
-	printf("in null\n");
+//	printf("in null\n");
 		if(count==1){
 			sprintf(trash_file_name,"%s%s%s",path,"trash/","sorted0.csv");
 			char last_swap_path[1000];
@@ -230,7 +230,8 @@ void merge_files()
 	 }
 	 temp=read_heap_node(t.fd);
 //	 printf("adfter read heap node\n");
-	 if(temp!=NULL){printf("temp is NULL\n");
+	 if(temp!=NULL){
+	 //printf("temp is NULL\n");
 	 	heap_insert(heap,temp);}
 	 
 	
