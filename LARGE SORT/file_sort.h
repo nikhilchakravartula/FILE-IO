@@ -1,6 +1,8 @@
+
 #ifndef __FILE_SORT_H__
 #define __FILE_SORT_H__
 
+#include<signal.h>
 #include<string.h>
 #include<dirent.h>
 #include<sys/stat.h>
@@ -18,6 +20,7 @@ int new_file;
 
 heap_node* read_heap_node(int);
 
+
 void sort_individual_file(int fd)
 {
 	char sorted_file_name[1000];
@@ -30,9 +33,10 @@ void sort_individual_file(int fd)
 
 		if(-1==(mkdir(path,S_IRWXU | S_IRWXG | S_IRWXO))){perror("sorted directory error\n");exit(0);}
 
-
 	}
+	closedir(dir);
 	sprintf(sorted_file_name,"%ssorted%llu.csv",path,sorted_file_no);
+//	printf( "%s %d\n",sorted_file_name,strlen(sorted_file_name));
 	int sorted_new_file=creat(sorted_file_name,0644);
 	if(sorted_new_file==-1)
 	{
@@ -43,7 +47,8 @@ void sort_individual_file(int fd)
 	}
 
 
-	heap_node heap[300];
+	heap_node* heap=malloc(sizeof(heap_node)*300);
+	heap_initialise(300);
 	ssize_t len;
 	char ch;
 	unsigned long long val=0;
@@ -64,11 +69,13 @@ void sort_individual_file(int fd)
 	//	printf("%llu\n",t.data);
 
 	}
+	close(sorted_new_file);
 	sorted_file_no+=1;
 //	printf("sorted file %llu\n",sorted_file_no-1);
-	close(sorted_new_file);
+	
 //	realloc(heap,0);
-//	free(heap);
+	free(heap);
+//	close(fd);
 //	printf("returning\n");
 
 }
@@ -97,6 +104,7 @@ while(1)
 		val=val*10ULL+(ch-'0');
 	}
 	if(ch=='\n'||ch==EOF)
+
 	{
 		temp->str[k]='\n';
 		temp->str[k+1]='\0';
@@ -140,9 +148,10 @@ void merge_files()
 	while(1)
 	{
 	count=0;
-	  heap_node heap[MAX_FD];
+	  heap_node* heap=malloc(sizeof(heap_node)*MAX_FD);
+	  heap_initialise(MAX_FD);
 	  int sorted_fds[MAX_FD];
-
+//	printf("value of i and maxfd %d %d\n",i,MAX_FD);
 	for(i=0;i<MAX_FD;)
 	{
 //		printf("here\n");
@@ -168,7 +177,8 @@ void merge_files()
 		rename(sorted_file_name,trash_file_name);
 //		printf("After rename\n");
 		 temp=read_heap_node(sorted_fds[i]);
-
+		 if(temp!=NULL)
+//		printf("read heap node\n %s ",temp->str);
 		if(temp!=NULL)
 		heap_insert(heap,temp);
 
@@ -176,13 +186,25 @@ void merge_files()
 		}
 
 	}
-
+//	printf("contents of  heap are\n");
+//	heap_print(heap);
 //	printf("After loop count= %d\n",count);
 	if(entry==NULL)
 	{
+	level=0;
 	printf("in null\n");
 		if(count==1){
+			sprintf(trash_file_name,"%s%s%s",path,"trash/","sorted0.csv");
+			char last_swap_path[1000];
+			getcwd(last_swap_path,1000);
+			strcat(last_swap_path,"/file1.csv");
+			rename(trash_file_name,last_swap_path);
+//			printf("after rename\n");
+			sprintf(trash_file_name,"%s%s",path,"trash/");
+			remove(trash_file_name);
+			remove(path);
 			printf("done sorting\n");return;}
+	closedir(dir);
 	dir=opendir(path);
 
 
@@ -191,6 +213,7 @@ void merge_files()
 	sprintf(sorted_file_name,"%ssorted%llu.csv",path,level);
 //	printf("sorted file name %s\n",sorted_file_name);
 	sorted_new_file=creat(sorted_file_name,0644);
+	level+=1;
 	if(sorted_new_file==-1)
 	{
 		perror("error creating file in merge files\n");
@@ -200,15 +223,16 @@ void merge_files()
 	while(!heap_empty(heap))
 	{
 		 heap_node t=pop_min(heap);
-//		 printf("heap %s\n",t.str);
+//	 printf("heap %s\n",t.str);
 	 if( -1==(write(sorted_new_file,t.str,strlen(t.str))))
 	 {
 		perror("write error level sorted file\n");
 				exit(0);
 	 }
 	 temp=read_heap_node(t.fd);
-	 if(temp!=NULL)
-	 	heap_insert(heap,temp);
+//	 printf("adfter read heap node\n");
+	 if(temp!=NULL){printf("temp is NULL\n");
+	 	heap_insert(heap,temp);}
 	 
 	
 	}
@@ -226,17 +250,22 @@ void merge_files()
 	struct dirent* trash_entry;
 	while( (trash_entry=readdir(trash_dir))!=NULL)
 		{
+	//	printf("inside trash\n");
 			if( strcmp(trash_entry->d_name,".")!=0 && strcmp(trash_entry->d_name,"..")!=0)
 			{
 
-		strcat(trash_file_name,trash_entry->d_name);	
-unlink(trash_file_name);
+		sprintf(trash_file_name,"%s%s%s",path,"trash/",trash_entry->d_name);
+//		printf("%s\n",trash_file_name);
+		remove(trash_file_name);
 			}
 		}
 
-
+	closedir(trash_dir);
+	printf("freeing heap\n");
+	free(heap);
 	}
 
+	
 }
 
 void sort(int fd)
@@ -258,7 +287,7 @@ void sort(int fd)
 //		printf("here\n");
 		if(-1==(mkdir(path,0666))){perror("error creating directory\n");exit(0);}
 		
-	
+	closedir(dir);
 	while(1)
 	{
 //	printf("in whille\n");
@@ -311,7 +340,9 @@ void sort(int fd)
 	
 	
 	dir=opendir(path);
+	val=0;
 	 while((entry=readdir(dir))!=NULL ){
+	 val+=1;
 //	printf("%s\n",entry->d_name);
 		if( (strncmp(entry->d_name,"temp",4))==0){
 	 	sprintf(file_name,"%s%s",path,entry->d_name);
@@ -329,7 +360,8 @@ void sort(int fd)
 		}
 //		printf("After unlink\n");
 		
-	
+		closedir(dir);
+		opendir(path);
 		}
 		}
 	//	printf("befoire closedir\n");
@@ -339,19 +371,7 @@ void sort(int fd)
 	printf("sorting individual files completed\n\n");
 	
 	merge_files();
-	
-/*	for(unsigned long long i=0;i<file_no;i++)
-		lseek(temp_files[i],0,SEEK_SET);
-
-	heap_node* heap=malloc(sizeof(heap_node)*file_no);
-
-	for(unsigned long long i=0;i<file_no;i++)
-	{
-		heap_insert(heap,read_heap_node(temp_files[i]));
-
-	}
-
-*/	
+		
 }
 
 #endif

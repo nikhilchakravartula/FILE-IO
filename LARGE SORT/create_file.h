@@ -11,7 +11,7 @@
 #include<string.h>
 #include "data.h"
 #include "file_sort.h"
-#define FILE_SIZE 1ULL*1024ULL*1024ULL
+#define FILE_SIZE 25ULL*1024ULL*1024ULL
 //10ULL*1024ULL*1024ULL*1024ULL
 
 

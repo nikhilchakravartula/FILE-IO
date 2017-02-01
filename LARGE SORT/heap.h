@@ -48,14 +48,10 @@ void heapify(heap_node arr[],unsigned long long i)
     }
 
 }
-void heap_initialise( heap_node arr[],unsigned long long size)
+void heap_initialise(unsigned long long size)
 {
-    cursize=size-1;
-    for(unsigned long long i=size/2;i>0;i--)
-    {
-        heapify(arr,i);
-    }
-     heapify(arr,0);
+    cursize=0;
+    maxsize=size;
 }
 
 void heap_insert(heap_node* arr,heap_node* node)
@@ -71,6 +67,7 @@ unsigned long long temp=cursize-1;
         swap(arr,temp,parent(temp));
         temp=parent(temp);
     }
+//    free(node);
 
 
 
@@ -107,7 +104,7 @@ void heap_print(heap_node* arr)
 {
 	for(int i=0;i<cursize;i++)
 	{
-		printf("%llu\n",arr[i].data);
+		printf("%s\n",arr[i].str);
 
 	}
 
