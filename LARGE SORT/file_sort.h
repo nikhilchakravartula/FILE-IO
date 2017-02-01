@@ -162,18 +162,17 @@ void merge_files()
 
 		if(strcmp(entry->d_name,"trash")!=0 && strcmp(entry->d_name, ".")!=0 && strcmp(entry->d_name, "..")!=0)
 		{
-		i++;
 		count+=1;
 //		printf("inside if\n");
 //		printf("%s\n",entry->d_name);
 		sprintf(sorted_file_name,"%s%s",path,entry->d_name);
-
+		printf("i is %d\n",i);
 		sorted_fds[i]=open(sorted_file_name,O_RDWR);
 
 //		printf("After sorted fd count\n");
 		
 		sprintf(trash_file_name,"%s%s%s",path,"trash/",entry->d_name);
-//		printf("%s %s\n",sorted_file_name,trash_file_name);
+		printf("%s %s\n",sorted_file_name,trash_file_name);
 		rename(sorted_file_name,trash_file_name);
 //		printf("After rename\n");
 		 temp=read_heap_node(sorted_fds[i]);
@@ -181,7 +180,7 @@ void merge_files()
 //		printf("read heap node\n %s ",temp->str);
 		if(temp!=NULL)
 		heap_insert(heap,temp);
-
+		i++;
 		
 		}
 
@@ -199,7 +198,7 @@ void merge_files()
 			getcwd(last_swap_path,1000);
 			strcat(last_swap_path,"/file1.csv");
 			rename(trash_file_name,last_swap_path);
-//			printf("after rename\n");
+			printf("after rename\n");
 			sprintf(trash_file_name,"%s%s",path,"trash/");
 			remove(trash_file_name);
 			remove(path);
@@ -211,7 +210,7 @@ void merge_files()
 	}
 
 	sprintf(sorted_file_name,"%ssorted%llu.csv",path,level);
-//	printf("sorted file name %s\n",sorted_file_name);
+	printf("sorted file name %s\n",sorted_file_name);
 	sorted_new_file=creat(sorted_file_name,0644);
 	level+=1;
 	if(sorted_new_file==-1)
@@ -236,7 +235,7 @@ void merge_files()
 	 
 	
 	}
-//	printf("out loop and closing loop\n");
+	printf("out loop and closing loop\n");
 	close(sorted_new_file);
 //	printf("closed\n");
 	for(int j=0;j<i;j++)
@@ -250,12 +249,12 @@ void merge_files()
 	struct dirent* trash_entry;
 	while( (trash_entry=readdir(trash_dir))!=NULL)
 		{
-	//	printf("inside trash\n");
+		printf("inside trash\n");
 			if( strcmp(trash_entry->d_name,".")!=0 && strcmp(trash_entry->d_name,"..")!=0)
 			{
 
 		sprintf(trash_file_name,"%s%s%s",path,"trash/",trash_entry->d_name);
-//		printf("%s\n",trash_file_name);
+		printf("%s\n",trash_file_name);
 		remove(trash_file_name);
 			}
 		}
