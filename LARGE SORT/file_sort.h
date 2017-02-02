@@ -15,7 +15,7 @@ unsigned long long file_no=0,sorted_file_no=0;
 int cur_run_size=0;
 int new_file;
 
-#define RUN_SIZE 16*1024
+#define RUN_SIZE 1000000
 
 
 heap_node* read_heap_node(int);
@@ -198,7 +198,7 @@ void merge_files()
 			getcwd(last_swap_path,1000);
 			strcat(last_swap_path,"/file1.csv");
 			rename(trash_file_name,last_swap_path);
-			printf("after rename\n");
+			//printf("after rename\n");
 			sprintf(trash_file_name,"%s%s",path,"trash/");
 			remove(trash_file_name);
 			remove(path);
@@ -210,7 +210,7 @@ void merge_files()
 	}
 
 	sprintf(sorted_file_name,"%ssorted%llu.csv",path,level);
-	printf("sorted file name %s\n",sorted_file_name);
+	//printf("sorted file name %s\n",sorted_file_name);
 	sorted_new_file=creat(sorted_file_name,0644);
 	level+=1;
 	if(sorted_new_file==-1)
@@ -236,7 +236,7 @@ void merge_files()
 	 
 	
 	}
-	printf("out loop and closing loop\n");
+//	printf("out loop and closing loop\n");
 	close(sorted_new_file);
 //	printf("closed\n");
 	for(int j=0;j<i;j++)
@@ -250,18 +250,18 @@ void merge_files()
 	struct dirent* trash_entry;
 	while( (trash_entry=readdir(trash_dir))!=NULL)
 		{
-		printf("inside trash\n");
+	//	printf("inside trash\n");
 			if( strcmp(trash_entry->d_name,".")!=0 && strcmp(trash_entry->d_name,"..")!=0)
 			{
 
 		sprintf(trash_file_name,"%s%s%s",path,"trash/",trash_entry->d_name);
-		printf("%s\n",trash_file_name);
+	//	printf("%s\n",trash_file_name);
 		remove(trash_file_name);
 			}
 		}
 
 	closedir(trash_dir);
-	printf("freeing heap\n");
+	//printf("freeing heap\n");
 	free(heap);
 	}
 
@@ -273,7 +273,7 @@ void sort(int fd)
 	struct dirent* entry;
 	char path[1000];
 	getcwd(path,1000);
-	printf("%s\n",path);
+	//printf("%s\n",path);
 	strcat(path,"/temp_files/");
 	DIR* dir=opendir(path);
 	char temp_path[strlen(path)+20],file_name[1000],buf[RUN_SIZE],temp[10000];
