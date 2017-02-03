@@ -67,7 +67,7 @@ unsigned long long temp=cursize-1;
         swap(arr,temp,parent(temp));
         temp=parent(temp);
     }
-//    free(node);
+    free(node);
 
 
 

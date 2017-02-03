@@ -47,8 +47,8 @@ void sort_individual_file(int fd)
 	}
 
 
-	heap_node* heap=malloc(sizeof(heap_node)*300);
-	heap_initialise(300);
+	heap_node* heap=malloc(sizeof(heap_node)*MAX_HEAP_SIZE);
+	heap_initialise(MAX_HEAP_SIZE);
 	ssize_t len;
 	char ch;
 	unsigned long long val=0;
@@ -163,13 +163,13 @@ void merge_files()
 		if(strcmp(entry->d_name,"trash")!=0 && strcmp(entry->d_name, ".")!=0 && strcmp(entry->d_name, "..")!=0)
 		{
 		count+=1;
-//		printf("inside if\n");
+		printf("inside if\n");
 //		printf("%s\n",entry->d_name);
 		sprintf(sorted_file_name,"%s%s",path,entry->d_name);
 //		printf("i is %d\n",i);
 		sorted_fds[i]=open(sorted_file_name,O_RDWR);
 
-//		printf("After sorted fd count\n");
+//	printf("After sorted fd count\n");
 		
 		sprintf(trash_file_name,"%s%s%s",path,"trash/",entry->d_name);
 //		printf("%s %s\n",sorted_file_name,trash_file_name);
@@ -191,14 +191,14 @@ void merge_files()
 	if(entry==NULL)
 	{
 	level=0;
-//	printf("in null\n");
+	printf("in null\n");
 		if(count==1){
 			sprintf(trash_file_name,"%s%s%s",path,"trash/","sorted0.csv");
 			char last_swap_path[1000];
 			getcwd(last_swap_path,1000);
 			strcat(last_swap_path,"/file1.csv");
 			rename(trash_file_name,last_swap_path);
-			//printf("after rename\n");
+			printf("after rename\n");
 			sprintf(trash_file_name,"%s%s",path,"trash/");
 			remove(trash_file_name);
 			remove(path);
@@ -229,16 +229,16 @@ void merge_files()
 				exit(0);
 	 }
 	 temp=read_heap_node(t.fd);
-//	 printf("adfter read heap node\n");
+	 printf("adfter read heap node\n");
 	 if(temp!=NULL){
-	 //printf("temp is NULL\n");
+	 printf("temp is NULL\n");
 	 	heap_insert(heap,temp);}
 	 
 	
 	}
-//	printf("out loop and closing loop\n");
+	printf("out loop and closing loop\n");
 	close(sorted_new_file);
-//	printf("closed\n");
+	printf("closed\n");
 	for(int j=0;j<i;j++)
 	{
 		//printf("closing file %d i=%d \n",j,i);
@@ -250,7 +250,7 @@ void merge_files()
 	struct dirent* trash_entry;
 	while( (trash_entry=readdir(trash_dir))!=NULL)
 		{
-	//	printf("inside trash\n");
+		printf("inside trash\n");
 			if( strcmp(trash_entry->d_name,".")!=0 && strcmp(trash_entry->d_name,"..")!=0)
 			{
 
@@ -261,7 +261,7 @@ void merge_files()
 		}
 
 	closedir(trash_dir);
-	//printf("freeing heap\n");
+	printf("freeing heap\n");
 	free(heap);
 	}
 
