@@ -270,14 +270,17 @@ void merge_files()
 
 void sort(int fd)
 {
+	printf("in sort\n");
 	struct dirent* entry;
 	char path[1000];
 	getcwd(path,1000);
 	//printf("%s\n",path);
 	strcat(path,"/temp_files/");
 	DIR* dir=opendir(path);
+	//printf("before buffer\n");
 	char temp_path[strlen(path)+20],file_name[1000],buf[RUN_SIZE],temp[10000];
-	int k=0;
+	//printf("After buffer of run size\n");
+int k=0;
 	cur_run_size=0;
 	ssize_t len;
 	unsigned long long val=0;
